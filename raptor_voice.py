@@ -13,7 +13,7 @@ LANGUAGE_CODE = "en"  # Language code for Vosk and TTS models (e.g., 'en' for En
 TTS_MODEL_NAME = "rafalosa/tts_difussor_male"  # Example: Use a male British voice
 
 # Load vosk model
-MODEL_PATH = "./vosk-model-small-en-us-0.15"
+MODEL_PATH = "/home/$USER/vosk-model-small-en-us-0.15"
 model = Model(MODEL_PATH)
 
 def transcribe_audio(audio_data):
@@ -66,13 +66,13 @@ def listen_for_wake_word(wake_word=WAKE_WORD):
     streaming = False
 
     def callback(indata, frames, time, status):
+        nonlocal streaming
         if not streaming:
             text = transcribe_audio(indata)
             print(f"Transcribed: {text}")
             
             if wake_word in text:
                 print(f"Detected wake word: '{wake_word}'")
-                global streaming
                 streaming = True
 
     stream = sd.InputStream(samplerate=RATE, blocksize=CHUNK_SIZE, channels=1, callback=callback)
@@ -107,8 +107,8 @@ def main():
 
         # Add the user's message to the chat history
         if transcribed_text.strip():
-            conversation_history.append(f"User: {transcribed_text}")
-
+            conversation_history.append(f"User: {transcribed_sound}")
+        
         # Send text to Ollama server and get response
         ollama_response_text = send_to_ollama(conversation_history, transcribed_text)
         print(f"Ollama Response: {ollama_response_text}")
