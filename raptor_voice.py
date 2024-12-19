@@ -13,7 +13,7 @@ LANGUAGE_CODE = "en"  # Language code for Vosk and TTS models (e.g., 'en' for En
 TTS_MODEL_NAME = "rafalosa/tts_difussor_male"  # Example: Use a male British voice
 
 # Load vosk model
-MODEL_PATH = "./vosk-model-en-us-0.22"
+MODEL_PATH = "./vosk-model-small-en-us-0.15"
 model = Model(MODEL_PATH)
 
 def transcribe_audio(audio_data):
