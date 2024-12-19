@@ -13,7 +13,7 @@ LANGUAGE_CODE = "en"  # Language code for Vosk and TTS models (e.g., 'en' for En
 TTS_MODEL_NAME = "rafalosa/tts_difussor_male"  # Example: Use a male British voice
 
 # Load vosk model
-MODEL_PATH = "/home/$USER/vosk-model-small-en-us-0.15"
+MODEL_PATH = "./vosk-model-small-en-us-0.15"
 model = Model(MODEL_PATH)
 
 def transcribe_audio(audio_data):
@@ -62,7 +62,6 @@ def listen_for_wake_word(wake_word=WAKE_WORD):
     CHUNK_SIZE = 4096
     RATE = 16000
     
-    frames = []
     streaming = False
 
     def callback(indata, frames, time, status):
@@ -71,7 +70,7 @@ def listen_for_wake_word(wake_word=WAKE_WORD):
             text = transcribe_audio(indata)
             print(f"Transcribed: {text}")
             
-            if wake_word in text:
+            if wake_word in (text or ''):
                 print(f"Detected wake word: '{wake_word}'")
                 streaming = True
 
@@ -105,29 +104,32 @@ def main():
         transcribed_text = transcribe_audio(AudioSegment.from_wav(audio_data_file).get_array_of_samples())
         print(f"Transcribed Text: {transcribed_text}")
 
-        # Add the user's message to the chat history
-        if transcribed_text.strip():
-            conversation_history.append(f"User: {transcribed_sound}")
+        # Add the user's message to the chat history only if text is not None and not empty
+        if transcribed_text and transcribed_text.strip():
+            conversation_history.append(f"User: {transcribed_text}")
         
         # Send text to Ollama server and get response
         ollama_response_text = send_to_ollama(conversation_history, transcribed_text)
         print(f"Ollama Response: {ollama_response_text}")
-        
+
+        # Add the assistant's message to chat history only if response is not None and not empty
         if ollama_response_text.strip():
             conversation_history.append(f"Assistant: {ollama_response_text}")
 
         # Generate audio from the response
-        generated_audio_segment = generate_audio_response(ollama_response_text)
+        if ollama_response_text:
+            generated_audio_segment = generate_audio_response(ollama_response_text)
 
-        # Save or play the generated audio (Optional: Play it directly using pydub's play method)
-        generated_audio_segment.export("generated_output.wav", format="wav")
-        print(f"Generated audio saved to 'generated_output.wav'")
+            # Save or play the generated audio (Optional: Play it directly using pydub's play method)
+            generated_audio_segment.export("generated_output.wav", format="wav")
+            print(f"Generated audio saved to 'generated_output.wav'")
 
-        # Play back the response
-        play_audio_file("generated_output.wav")
+            # Play back the response
+            play_audio_file("generated_output.wav")
         
         os.remove(audio_data_file)
-        os.remove("generated_output.wav")
+        if ollama_response_text:
+            os.remove("generated_output.wav")
 
 if __name__ == "__main__":
     main()
