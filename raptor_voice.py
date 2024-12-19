@@ -1,29 +1,32 @@
 import os
 from pydub import AudioSegment, playback
-import pyaudio
-import whisper  # From https://github.com/openai/whisper
-import requests
-import numpy as np
-import io
-from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech
-from datasets import load_dataset
+from vosk import Model, KaldiRecognizer
 import sounddevice as sd
-from scipy.io.wavfile import write
+import numpy as np
+import scipy.io.wavfile as wav
+import requests
 
 # Configuration variables
 WAKE_WORD = "raptor"
 OLLAMA_URL = "http://localhost:8080"
-LANGUAGE_CODE = "en"  # Language code for Whisper and TTS models (e.g., 'en' for English)
-
-# TTS_MODEL_NAME: Name of the text-to-speech model to use
+LANGUAGE_CODE = "en"  # Language code for Vosk and TTS models (e.g., 'en' for English)
 TTS_MODEL_NAME = "rafalosa/tts_difussor_male"  # Example: Use a male British voice
 
-# Load Whisper model
-model = whisper.load_model("base")
+# Load vosk model
+MODEL_PATH = "./vosk-model-en-us-0.22"
+model = Model(MODEL_PATH)
 
-def transcribe_audio(audio_file):
-    result = model.transcribe(audio_file, fp16=False)  # Set fp16 to True if running on GPU
-    return result["text"]
+def transcribe_audio(audio_data):
+    rec = KaldiRecognizer(model, 16000)
+    
+    wav.write('temp_audio.wav', 16000, np.array(audio_data))
+    with open('temp_audio.wav', 'rb') as f:
+        while True:
+            data = f.read(4096)
+            if len(data) == 0: break
+            if rec.AcceptWaveform(data):
+                result = rec.Result()
+                return result.split(":")[1][:-2]  # Extract the transcribed text
 
 def send_to_ollama(conversation_history, prompt_text, ollama_url=OLLAMA_URL):
     headers = {'Content-Type': 'application/json'}
@@ -41,6 +44,7 @@ def send_to_ollama(conversation_history, prompt_text, ollama_url=OLLAMA_URL):
         return ""
 
 def generate_audio_response(text, model_name=TTS_MODEL_NAME):
+    from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech
     processor = SpeechT5Processor.from_pretrained(model_name)
     model = SpeechT5ForTextToSpeech.from_pretrained(model_name)
 
@@ -53,54 +57,34 @@ def generate_audio_response(text, model_name=TTS_MODEL_NAME):
     return audio_segment
 
 def listen_for_wake_word(wake_word=WAKE_WORD):
-    CHUNK_SIZE = 1024
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 1
-    RATE = 16000
-
-    p = pyaudio.PyAudio()
+    import sounddevice as sd
     
-    stream = p.open(format=FORMAT,
-                    channels=CHANNELS,
-                    rate=RATE,
-                    input=True,
-                    frames_per_buffer=CHUNK_SIZE)
+    CHUNK_SIZE = 4096
+    RATE = 16000
+    
+    frames = []
+    streaming = False
+
+    def callback(indata, frames, time, status):
+        if not streaming:
+            text = transcribe_audio(indata)
+            print(f"Transcribed: {text}")
+            
+            if wake_word in text:
+                print(f"Detected wake word: '{wake_word}'")
+                global streaming
+                streaming = True
+
+    stream = sd.InputStream(samplerate=RATE, blocksize=CHUNK_SIZE, channels=1, callback=callback)
     
     print(f"Listening for wake word '{wake_word}'...")
     
-    frames = []
-    
-    while True:
-        data = stream.read(CHUNK_SIZE, exception_on_overflow=False)
-        
-        # Convert byte data to numpy array
-        audio_data = np.frombuffer(data, dtype=np.int16)
-        
-        # Perform detection (for simplicity, we're just checking if the wake word is spoken)
-        text = transcribe_audio(io.BytesIO(audio_data.tobytes()))
-        
-        frames.append(data)
-
-        if wake_word in text:
-            print(f"Detected wake word: '{wake_word}'")
-            
-            stream.stop_stream()
-            stream.close()
-            p.terminate()
-
-            # Save the recorded audio
-            wf = wave.open('temp_audio.wav', 'wb')
-            wf.setnchannels(CHANNELS)
-            wf.setsampwidth(p.get_sample_size(FORMAT))
-            wf.setframerate(RATE)
-            wf.writeframes(b''.join(frames))
-            wf.close()
-            
-            return 'temp_audio.wav'
-    
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+    try:
+        with stream:
+            while not streaming:
+                pass  # Keep listening until the wake word is detected
+    finally:
+        return 'temp_audio.wav'
 
 def play_audio_file(file_path):
     sound = AudioSegment.from_wav(file_path)
@@ -118,7 +102,7 @@ def main():
             continue
         
         # Transcribe the audio file
-        transcribed_text = transcribe_audio(audio_data_file)
+        transcribed_text = transcribe_audio(AudioSegment.from_wav(audio_data_file).get_array_of_samples())
         print(f"Transcribed Text: {transcribed_text}")
 
         # Add the user's message to the chat history
