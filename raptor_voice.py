@@ -1,5 +1,6 @@
 import os
 from pydub import AudioSegment, playback
+import pyaudio
 import whisper  # From https://github.com/openai/whisper
 import requests
 import numpy as np
