@@ -4,6 +4,9 @@ import pygame
 from langchain.llms import Ollama
 import speech_recognition as sr
 
+# Define system_message at the start of your script
+SYSTEM_MESSAGE = "You are Raptor, a friendly AI assistant. KEEP RESPONSES VERY SHORT AND CONVERSATIONAL."
+
 # Safely deleted all files if there was an error running last time
 for mp3_file in os.listdir("mp3_files"):
     if mp3_file.endswith(".mp3"):
@@ -107,7 +110,7 @@ while True:
 
     if query != "":
         # Send command to AI (e.g., llama2)
-        text_ollama = ollama(query)
+        text_ollama = ollama(f"{SYSTEM_MESSAGE} {query}")
         
         with open("output.txt", "w", encoding="utf-8") as output_file:
             sentences = text_ollama.split(". ")
