@@ -5,7 +5,7 @@ from openai import OpenAI
 
 # Set API configuration
 client = OpenAI(base_url="http://jarvis.local:1234/v1", api_key="not-needed")
-chat_log_filename = "jarvis_chat.log"
+chat_log_filename = "raptor_chat.log"
 
 
 def chatgpt_streamed(user_input, system_message, conversation_history, bot_name):
