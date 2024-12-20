@@ -75,7 +75,7 @@ def take_command():
     while True:
         with sr.Microphone() as source:
             print("Listening for the wake word...")
-            r.pause_threshold = 5
+            r.pause_threshold = 2
             audio = r.listen(source)
         
         try:
