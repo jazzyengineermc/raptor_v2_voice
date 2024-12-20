@@ -1,114 +1,113 @@
-#!/usr/bin/python3
-from Espeak import *
-import pyttsx3
-from vosk import Model, KaldiRecognizer
-import vosk
-import pyaudio
+from gtts import gTTS
 import os
-import json
-import ollama
+import pygame
+from langchain.llms import Ollama
+import speech_recognition as sr
 
-# Set API configuration
-client = 
-chat_log_filename = "raptor_chat.log"
+#safely deleted all files if there was an error running last time
+for mp3_file in os.listdir("mp3_files"):
+    if mp3_file.endswith(".mp3"):
+        mp3_file_path = os.path.join("mp3_files", mp3_file)
+        os.remove(mp3_file_path)
 
-WAKE_WORD = "raptor"
-VOSK_MODEL = "/home/jreide/vosk-model-small-en-us-0.15" # vosk-model-en-us-0.22
+def play(file_path):
+    #play mp3s with the pygame mixer
+    try:
+        pygame.mixer.music.load(file_path)
+        pygame.mixer.music.play()
 
-# Mouth --- default old voice
-engine = pyttsx3.init()
-engine.setProperty("rate", 350)
-        
-vmbrit = 'mb-en1 ' # Male Brittish Voice
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
 
-voice = vmbrit
-es = Espeak()
+    except Exception as e:
+        print(f"Error while playing {file_path}: {e}")
 
+    finally:
+        pygame.mixer.music.stop()
 
-def recognize_speech():
-    model = vosk.Model(VOSK_MODEL)
-    recognizer = vosk.KaldiRecognizer(model, 16000)
+def generate_mp3(output_folder):
+    # For every line in output generate an mp3 file
+    with open("output.txt", "r", encoding="utf-8") as input_file:
+        for line_number, line in enumerate(input_file):
+            line = line.strip()
 
-    p = pyaudio.PyAudio()
-    stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
-    stream.start_stream()
+            # Skip empty lines
+            if line == "":
+                continue
 
-    text_answer = None
+            voice = "en-US-EricNeural"
+            mp3_file_path = os.path.join(output_folder, f"output_{line_number+10}.mp3")
+            command = f'edge-tts --voice "{voice}" --text "{line}" --write-media "{mp3_file_path}"'
+            os.system(command)
+            print(f"Generated MP3 for line {line_number}: {mp3_file_path}")
 
-    while text_answer is None:
-        data = stream.read(4000)
-        if len(data) == 0:
-            break
-        if recognizer.AcceptWaveform(data):
-            result = json.loads(recognizer.Result())
-            text = result.get("text", "")
-            text = text.lower()
-            print(text)
-            if WAKE_WORD in text:
-                text = text.lower()
-                text_answer = text.replace(WAKE_WORD, '')
-                return text_answer
+def speak():
 
-            if text_answer is not None:
-                break
+    output_folder = "mp3_files"
 
+    #generate mp3 file for tts
+    generate_mp3(output_folder)
 
-def chatgpt_streamed(user_input, system_message, conversation_history, bot_name):
-    messages = [{"role": "system", "content": system_message}] + conversation_history + [{"role": "user", "content": user_input}]
+    try:
+        #play every mp3 file
+        mp3_files = [file for file in os.listdir(output_folder) if file.endswith(".mp3")]
 
-    streamed_completion = client.chat.completions.create(
-        model="llava-llama-3-8b-v1_1",
-        messages=messages,
-        stream=True,
-        temperature=1
-    )
+        mp3_files.sort()
+        print(mp3_files)
 
-    full_responce = ""
-    line_buffer = ""
+        for mp3_file in mp3_files:
+            mp3_file_path = os.path.join(output_folder, mp3_file)
+            play(mp3_file_path)
 
-    with open(chat_log_filename, "a") as log_file:
-        for chunk in streamed_completion:
-            delta_content = chunk.choices[0].delta.content
+        pygame.mixer.quit()
 
-            if delta_content is not None:
-                line_buffer += delta_content
+    except Exception as e:
+        print(f"Error while playing: {e}")
 
-                if '\n' in line_buffer:
-                    lines = line_buffer.split('\n')
-                    for line in lines[:-1]:
-                        full_responce += line + '\n'
-                        log_file.write(f"{bot_name}: {line}\n")
-                    line_buffer = lines[-1]
+    finally:
+        #delete all played mp3 files
+        for mp3_file in os.listdir(output_folder):
+            if mp3_file.endswith(".mp3"):
+                mp3_file_path = os.path.join(output_folder, mp3_file)
+                os.remove(mp3_file_path)
 
-        if line_buffer:
-            full_responce += line_buffer
-            log_file.write(f"{bot_name}: {line_buffer}\n")
+def take_command():
 
-    return full_responce
+    #recognize the command with the microphone
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
 
+    try:
+        print("recognizing...")
+        query = r.recognize_google(audio, language='en')
 
-def user_chatbot_conversation():
-    conversation_history = []
-    system_message = "You are Raptor, an advanced artificial intelligence modeled after Jarvis from the Iron Man movies. KEEP RESPONCES VERY SHORT AND CONVERSATIONAL."
-    while True:
-        # Mic to speech reconizer, return user_input
-        # user_input = input(">> ")
-        user_input = recognize_speech()
-        if user_input == "goodbye":
-            es.talk(voice, speech="Taa Taa For now.") # Play TTS wav
-            break
-        # print(user_input)
-        conversation_history.append({"role": "user", "content": user_input})
-        chatbot_responce = chatgpt_streamed(user_input, system_message, conversation_history, "Jarvis")
-        conversation_history.append({"role": "assistant", "content": chatbot_responce})
+    except Exception as e:
+        print(e)
+        return ""
+    
+    return query
 
-        prompt2 = chatbot_responce
-        es.talk(voice, speech=prompt2) # Play TTS wav
+ollama = Ollama(base_url='http://localhost:11434', model='phi3') #change model as needed
 
-        if len(conversation_history) > 20:
-            conversation_history = conversation_history[-20:]
+while True:
 
+    pygame.init()
+    pygame.mixer.init()
 
-es.talk(voice, speech="Greetings and salutations, what is on your mind?") # Play TTS wav
-user_chatbot_conversation()
+    #recognize command
+    query = take_command()
+    print("Command: "+query)
 
+    #send command to ai (e.g. llama2)
+    text_ollama = ollama(query)
+    
+    with open("output.txt", "w", encoding="utf-8") as output_file:
+        sentences = text_ollama.split(". ")
+        for sentence in sentences:
+            output_file.write(sentence.strip() + "\n")
+
+    #read out the response from the ai
+    speak()
