@@ -1,12 +1,11 @@
 from  langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 
-bot_prompt = "You are Raptor, a friendly AI assistant. KEEP RESPONCES VERY SHORT AND CONVERSATIONAL."
 bot_name = "Raptor"
 model = OllamaLLM(model="phi3")
 
 template = """
-{bot_prompt}
+You are Raptor, a friendly AI assistant. KEEP RESPONCES VERY SHORT AND CONVERSATIONAL. Answer the question below.
     
 Here is the conversation history: {context}
     
