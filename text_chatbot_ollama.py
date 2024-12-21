@@ -5,7 +5,7 @@ bot_name = "Raptor"
 model = OllamaLLM(model="phi3")
 
 template = """
-You are Raptor, a friendly AI assistant. KEEP RESPONCES VERY SHORT AND CONVERSATIONAL. Answer the question below.
+KEEP RESPONCES VERY SHORT AND CONVERSATIONAL. Answer the question below.
     
 Here is the conversation history: {context}
     
