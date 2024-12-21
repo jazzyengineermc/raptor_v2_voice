@@ -54,14 +54,14 @@ def user_chatbot_conversation():
             break
         # print(user_input)
         conversation_history.append({"role": "user", "content": user_input})
-        chatbot_responce = chatgpt_streamed(user_input, system_message, conversation_history, "Jarvis")
+        chatbot_responce = chatgpt_streamed(user_input, system_message, conversation_history, "Raptor")
         conversation_history.append({"role": "assistant", "content": chatbot_responce})
 
         prompt2 = chatbot_responce
         print(prompt2) # Play TTS wav
 
-        if len(conversation_history) > 20:
-            conversation_history = conversation_history[-20:]
+        if len(conversation_history) > 10:
+            conversation_history = conversation_history[-10:]
 
 
 print("Greetings and salutations, what is on your mind?") # Play TTS wav

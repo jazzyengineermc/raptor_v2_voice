@@ -12,17 +12,17 @@ from openai import OpenAI
 client = OpenAI(base_url="http://jarvis.local:1234/v1", api_key="not-needed")
 chat_log_filename = "raptor_chat.log"
 
+# Ears
 WAKE_WORD = "raptor"
 VOSK_MODEL = "/home/jreide/vosk-model-small-en-us-0.15" # vosk-model-en-us-0.22
 
 # Mouth --- default old voice
 engine = pyttsx3.init()
-engine.setProperty("rate", 350)
-        
+engine.setProperty("rate", 350)       
 vmbrit = 'mb-en1 ' # Male Brittish Voice
-
 voice = vmbrit
 es = Espeak()
+# Example: es.talk(voice, speech="")
 
 
 def recognize_speech():
