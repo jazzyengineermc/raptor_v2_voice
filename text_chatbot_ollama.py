@@ -4,7 +4,7 @@ bot_name = "Raptor"
 # Define system_message at the start of your script
 SYSTEM_MESSAGE = "You are Raptor, a friendly AI assistant. KEEP RESPONSES VERY SHORT AND CONVERSATIONAL."
 ollama = Ollama(base_url='http://localhost:11434', model='phi3')  # Change model as needed
-chat_log_filename = [{bot_name}"_chat.log"]
+chat_log_filename = [bot_name] + "_chat.log"
 
 
 def chat_ollama(query, SYSTEM_MESSAGE, conversation_history, bot_name):
