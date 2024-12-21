@@ -6,7 +6,7 @@ bot_name = "Raptor"
 model = OllamaLLM(model="phi3")
 
 template = """
-Answer the question below.
+{bot_prompt}
     
 Here is the conversation history: {context}
     
@@ -19,7 +19,7 @@ prompt = ChatPromptTemplate.from_template(template)
 chain = prompt | model
 
 def chat_with_ollama():
-    context = bot_prompt
+    context = ""
     print("Welcome to the ", bot_name, " chatbot! Type 'bye' to  quit.")
     while True:
         user_input = input("You: ") # Or Speech recognition input STT
@@ -28,8 +28,11 @@ def chat_with_ollama():
         
         result = chain.invoke({"context": context, "question": user_input})
         print(bot_name, ": ", result) # Or TTS the result
-        context += f"\nUser: {user_input}\n{bot_name}: {result}"
-     
+        context += f"\nUser: {user_input}\nAI: {result}"
+
+        if len(context) > 10:
+            context = context[-10:]
+        
         
 if __name__ == "__main__":
     chat_with_ollama()
