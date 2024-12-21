@@ -15,12 +15,12 @@ def chat_with_ollama(query, SYSTEM_MESSAGE, conversation_history, bot_name):
     
     # Define a prompt template
     template = """
-    Generate a creative writing prompt based on the following class list:
+    {SYSTEM_MESSAGE}:
     {query}
     """
 
     prompt = PromptTemplate(
-        input_variables=["class_list"],
+        input_variables=["query"],
         template=template,
     )
 
@@ -29,29 +29,9 @@ def chat_with_ollama(query, SYSTEM_MESSAGE, conversation_history, bot_name):
 
     # Run the chain
     result = chain.run(class_list=query)
+    print(result)
     
-    full_responce = ""
-    line_buffer = ""
-
-    with open(chat_log_filename, "a") as log_file:
-        for chunk in result:
-            delta_content = chunk.choices[0].delta.content
-
-            if delta_content is not None:
-                line_buffer += delta_content
-
-                if '\n' in line_buffer:
-                    lines = line_buffer.split('\n')
-                    for line in lines[:-1]:
-                        full_responce += line + '\n'
-                        log_file.write(f"{bot_name}: {line}\n")
-                    line_buffer = lines[-1]
-
-        if line_buffer:
-            full_responce += line_buffer
-            log_file.write(f"{bot_name}: {line_buffer}\n")
-
-    return full_responce
+    return result
     
 
 conversation_history = []
