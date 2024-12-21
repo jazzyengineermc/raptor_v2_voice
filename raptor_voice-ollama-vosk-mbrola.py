@@ -67,7 +67,7 @@ def chat_with_ollama():
     #print("Welcome to the ", bot_name, " chatbot! Type 'bye' to  quit.")
     while True:
         user_input = recognize_speech() # input("You: ") # Or Speech recognition input STT
-        if user_input.lower() == "bye":
+        if user_input.lower() == "switch off":
             es.talk(voice, speech="tah tah for now")
             break
         
@@ -81,5 +81,5 @@ def chat_with_ollama():
         
         
 if __name__ == "__main__":
-    es.talk(voice, speech="Greeting and salutations")
+    es.talk(voice, speech="Greetings and salutations")
     chat_with_ollama()
