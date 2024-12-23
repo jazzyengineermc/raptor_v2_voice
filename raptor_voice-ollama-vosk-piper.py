@@ -108,5 +108,5 @@ while True:
         print(f"Bot: {response_text}")
         chat_history.append({"role": "user", "content": user_input})
         chat_history.append({"role": "assistant", "content": response_text})
-        print(chat_history)
+        #print(chat_history)
         tts_piper(response_text)
