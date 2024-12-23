@@ -27,18 +27,21 @@ def tts_piper(textToSpeak):
     
     
 while True:
-
+    chat_history = ""
     # Recognize command
     query = input(">> ")
-    print("Command: " + query)
 
     if query != "":
         # Send command to AI (e.g., llama2)
-        text_ollama = ollama(f"{SYSTEM_MESSAGE} {query}")
-        
+        query2 = query + chat_history
+        text_ollama = ollama(f"{SYSTEM_MESSAGE} {query2}")
+        chat_history += f"\nUser: {query}\nAI: {text_ollama}"
         #with open("output.txt", "w", encoding="utf-8") as output_file:
         #    sentences = text_ollama.split(". ")
         #    for sentence in sentences:
         #        output_file.write(sentence.strip() + "\n")
         #        print(sentence)
         tts_piper(textToSpeak=text_ollama)
+        
+        if len(chat_history) > 10:
+            chat_history = chat_history[-10:]
