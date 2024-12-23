@@ -84,8 +84,9 @@ def get_chat_response(query, chat_history):
                     json_chunk = json.loads(chunk.decode('utf-8'))
                     content = json_chunk['message']['content']
                     # Append the bot's message to chat history
-                    chat_history.append({"role": "assistant", "content": content})
                     full_response += content
+                    chat_history.append({"role": "assistant", "content": full_response})
+                    
                 except json.JSONDecodeError as e:
                     print(f"JSON Decode Error: {e}")
         
@@ -106,4 +107,5 @@ while True:
     response_text, chat_history = get_chat_response(user_input, chat_history)
     if response_text is not None:
         print(f"Bot: {response_text}")
+        print(chat_history)
         tts_piper(response_text)
