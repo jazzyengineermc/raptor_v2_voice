@@ -102,10 +102,11 @@ while True:
     user_input = recognize_speech() # input("You: ")
     if user_input.lower() in ['exit', 'quit']:
         break
-
+    
     response_text, chat_history = get_chat_response(user_input, chat_history)
     if response_text is not None:
         print(f"Bot: {response_text}")
+        chat_history.append({"role": "user", "content": user_input})
         chat_history.append({"role": "assistant", "content": response_text})
         print(chat_history)
         tts_piper(response_text)
