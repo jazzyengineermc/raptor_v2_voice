@@ -85,11 +85,11 @@ def get_chat_response(query, chat_history):
                     content = json_chunk['message']['content']
                     # Append the bot's message to chat history
                     full_response += content
-                    chat_history.append({"role": "assistant", "content": full_response})
-                    
+                       
                 except json.JSONDecodeError as e:
                     print(f"JSON Decode Error: {e}")
         
+        chat_history.append({"role": "assistant", "content": full_response})
         print("Full Response Body:")
         return full_response, chat_history[:10]  # Keep only the last 10 messages for context
     else:
