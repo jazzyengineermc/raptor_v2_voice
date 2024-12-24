@@ -116,7 +116,7 @@ while True:
         tts_piper("ta ta for now")
         continue
     
-    if "what time is it" or "what day is it" in user_input:
+    if user_input in ['what time is it', 'what day is it']:
         # 12 Hour format with am/pm
         dt_string = now.strftime("%I:%M %p")
         # Textual month, day and year	
@@ -124,12 +124,12 @@ while True:
         tts_piper(f"The time is, {dt_string}, on {d2}")
         continue
     
-    if "what do you see" in user_input:
+    if user_input in ['what do you see']:
         # Get image from webcam and ask the LLM
         tts_piper("Nothing yet, I am not coded for that.")
         continue
     
-    if "todo list" or "to do list" in user_input:
+    if user_input in ['todo list', 'to do list']:
         # todo.py for the win, yay recycled code!
         tts_piper("To do list placeholder.")
         continue
