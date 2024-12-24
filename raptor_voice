@@ -171,7 +171,7 @@ while True:
             
             #tts_piper('list is as follows...') 
             td_list = todo.ls()
-            tts_piper('list is as follows...' + td_list)
+            tts_piper('list is as follows...' + str(td_list))
             user_input = ''
             
         else:
