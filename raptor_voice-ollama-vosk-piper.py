@@ -10,7 +10,7 @@ url = 'http://localhost:11434/api/chat'
 
 urlPiper = "http://localhost:5000"
 outputFilename = "output.wav"
-SYSTEM_PROMPT = "You are Raptor, a friendly AI assistant. KEEP RESPONSES VERY SHORT AND CONVERSATIONAL."
+SYSTEM_PROMPT = "You are Raptor, a friendly and supportive AI assistant. KEEP RESPONSES VERY SHORT AND CONVERSATIONAL."
 WAKE_WORD = "raptor"
 VOSK_MODEL = "/home/jreide/vosk-model-small-en-us-0.15"
  
@@ -60,7 +60,7 @@ def get_chat_response(query, chat_history):
     # Data payload as JSON object with conversation history
     data = {
         "model": "llava-phi3",
-        "messages": chat_history + [{"role": "user", "system": SYSTEM_PROMPT, "content": query}]
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT}] + chat_history + [{"role": "user", "content": query}]
     }
 
     # Convert data to JSON string
@@ -100,8 +100,20 @@ chat_history = []
 
 while True:
     user_input = recognize_speech() # input("You: ")
-    if user_input.lower() in ['exit', 'quit']:
+    user_input = user_input.lower()
+    user_input = user_input.strip()
+    if user_input in ['exit', 'quit']:
         break
+    
+    if user_input in ['bye', 'goodbye']:
+        tts_piper("ta ta for now")
+        continue
+    
+    if "what time is it" in user_input:
+        # time()
+        time = "Time to get a watch."
+        tts_piper(f"The time is, {time}")
+        continue
     
     response_text, chat_history = get_chat_response(user_input, chat_history)
     if response_text is not None:
