@@ -178,10 +178,10 @@ def nec():
         for line in f:
             
             line = line.strip('\n')
-            print(c, line)
+            #print(c, line)
             d.update({c: line})
             c = c+1
-        
+        print(d)
     except:
         sys.stdout.buffer.write("There are no pending todos!".encode('utf8'))
 
