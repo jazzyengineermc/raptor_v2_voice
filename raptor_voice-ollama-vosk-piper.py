@@ -10,10 +10,10 @@ url = 'http://localhost:11434/api/chat'
 
 urlPiper = "http://localhost:5000"
 outputFilename = "output.wav"
-
+SYSTEM_PROMPT = "You are Raptor, a friendly AI assistant. KEEP RESPONSES VERY SHORT AND CONVERSATIONAL."
 WAKE_WORD = "raptor"
 VOSK_MODEL = "/home/jreide/vosk-model-small-en-us-0.15"
-
+ 
 def recognize_speech():
     model = vosk.Model(VOSK_MODEL)
     recognizer = vosk.KaldiRecognizer(model, 16000)
@@ -60,6 +60,7 @@ def get_chat_response(query, chat_history):
     # Data payload as JSON object with conversation history
     data = {
         "model": "llava-phi3",
+        "system": SYSTEM_PROMPT,
         "messages": chat_history + [{"role": "user", "content": query}]
     }
 
