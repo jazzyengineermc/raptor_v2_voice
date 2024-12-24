@@ -1,9 +1,16 @@
+#!/usr/bin/python3
 import requests
 import json
 import vosk
 import pyaudio
 import requests
 import subprocess as cmdLine
+from datetime import datetime
+from datetime import date
+
+# datetime object containing current date and time
+now = datetime.now()
+today = date.today()
 
 # URL of the API endpoint
 url = 'http://localhost:11434/api/chat'
@@ -110,9 +117,11 @@ while True:
         continue
     
     if "what time is it" in user_input:
-        # time()
-        time = "Time to get a watch."
-        tts_piper(f"The time is, {time}")
+        # 12 Hour format with am/pm
+        dt_string = now.strftime("%I:%M %p")
+        # Textual month, day and year	
+        d2 = today.strftime("%B %d, %Y")
+        tts_piper(f"The time is, {dt_string}, on {d2}")
         continue
     
     response_text, chat_history = get_chat_response(user_input, chat_history)
