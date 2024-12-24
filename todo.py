@@ -39,8 +39,8 @@ def ls():
 		k = l
 
 		for i in d:
-			td_list.append(sys.stdout.buffer.write(f"[{l}] {d[l]}\n".encode('utf8')))
-			#sys.stdout.buffer.write("\n".encode('utf8'))
+			sys.stdout.buffer.write(f"[{l}] {d[l]}\n".encode('utf8'))
+			sys.stdout.buffer.write("\n".encode('utf8'))
 			l = l-1
 
 	except Exception as e:
@@ -48,104 +48,110 @@ def ls():
 
 
 def deL(no):
-	try:
-		if no == 'one':
-			no = 1
-		if no == 'two':
-			no = 2
-		if no == 'to':
-			no = 2
-		if no == 'three':
-			no = 3
-		if no == 'four':
-			no = 4
-		if no == 'five':
-			no = 5
-		if no == 'six':
-			no = 6
-		if no == 'seven':
-			no = 7
-		if no == 'eight':
-			no = 8
-		if no == 'ate':
-			no = 8
-		if no == 'nine':
-			no = 9
-		if no == 'ten':
-			no = 10
-		print(no)
-		no = int(no)
-		d = {}
-		f = open('todo.lst', 'r')
-		c = 1
-		for line in f:
-			line = line.strip('\n')
-			d.update({c: line})
-			c = c+1
-		with open("todo.lst", "r+") as f:
-			lines = f.readlines()
-			f.seek(0)
-			for i in lines:
-				if i.strip('\n') != d[no]:
-					f.write(i)
-			f.truncate()
-		print(f"Deleted todo #{no}")
+    try:
+        if no == 'one':
+            no = 1
+        if no == 'two':
+            no = 2
+        if no == 'to':
+            no = 2
+        if no == 'too':
+            no = 2
+        if no == 'three':
+            no = 3
+        if no == 'four':
+            no = 4
+        if no == 'for':
+            no = 4
+        if no == 'five':
+            no = 5
+        if no == 'six':
+            no = 6
+        if no == 'seven':
+            no = 7
+        if no == 'eight':
+            no = 8
+        if no == 'ate':
+            no = 8
+        if no == 'nine':
+            no = 9
+        if no == 'ten':
+            no = 10
+        print(no)
+        no = int(no)
+        d = {}
+        f = open('todo.lst', 'r')
+        c = 1
+        for line in f:
+            line = line.strip('\n')
+            d.update({c: line})
+            c = c+1
+        with open("todo.lst", "r+") as f:
+            lines = f.readlines()
+            f.seek(0)
+            for i in lines:
+                if i.strip('\n') != d[no]:
+                    f.write(i)
+            f.truncate()
+        print(f"Deleted todo #{no}")
 
-	except Exception as e:
-		print(f"Error: todo #{no} does not exist. Nothing deleted.")
+    except Exception as e:
+        print(f"Error: todo #{no} does not exist. Nothing deleted.")
 
 
 def done(no):
-	try:
-		if no == 'one':
-			no = 1
-		if no == 'two':
-			no = 2
-		if no == 'to':
-			no = 2
-		if no == 'three':
-			no = 3
-		if no == 'four':
-			no = 4
-		if no == 'five':
-			no = 5
-		if no == 'six':
-			no = 6
-		if no == 'seven':
-			no = 7
-		if no == 'eight':
-			no = 8
-		if no == 'ate':
-			no = 8
-		if no == 'nine':
-			no = 9
-		if no == 'ten':
-			no = 10
-		print(no)
-		d = {}
-		f = open('todo.lst', 'r')
-		c = 1
-		for line in f:
-			line = line.strip('\n')
-			d.update({c: line})
-			c = c+1
-		no = int(no)
-		f = open('done.txt', 'a')
-		st = 'x '+str(datetime.datetime.today()).split()[0]+' '+d[no]
-		f.write(st)
-		f.write("\n")
-		f.close()
-		print(f"Marked todo #{no} as done.")
+    try:
+        if no == 'one':
+            no = 1
+        if no == 'two':
+            no = 2
+        if no == 'to':
+            no = 2
+        if no == 'three':
+            no = 3
+        if no == 'four':
+            no = 4
+        if no == 'four':
+            no = 4
+        if no == 'five':
+            no = 5
+        if no == 'six':
+            no = 6
+        if no == 'seven':
+            no = 7
+        if no == 'eight':
+            no = 8
+        if no == 'ate':
+            no = 8
+        if no == 'nine':
+            no = 9
+        if no == 'ten':
+            no = 10
+        print(no)
+        d = {}
+        f = open('todo.lst', 'r')
+        c = 1
+        for line in f:
+            line = line.strip('\n')
+            d.update({c: line})
+            c = c+1
+        no = int(no)
+        f = open('done.txt', 'a')
+        st = 'x '+str(datetime.datetime.today()).split()[0]+' '+d[no]
+        f.write(st)
+        f.write("\n")
+        f.close()
+        print(f"Marked todo #{no} as done.")
 		
-		with open("todo.lst", "r+") as f:
-			lines = f.readlines()
-			f.seek(0)
-			for i in lines:
-				if i.strip('\n') != d[no]:
-					f.write(i)
-			f.truncate()
-	except:
-		print(f"Error: todo #{no} does not exist.")
+        with open("todo.lst", "r+") as f:
+            lines = f.readlines()
+            f.seek(0)
+            for i in lines:
+                if i.strip('\n') != d[no]:
+                    f.write(i)
+            f.truncate()
+    except:
+        print(f"Error: todo #{no} does not exist.")
 
 
 def report():
