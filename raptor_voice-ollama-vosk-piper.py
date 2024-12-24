@@ -60,8 +60,7 @@ def get_chat_response(query, chat_history):
     # Data payload as JSON object with conversation history
     data = {
         "model": "llava-phi3",
-        "system": SYSTEM_PROMPT,
-        "messages": chat_history + [{"role": "user", "content": query}]
+        "messages": SYSTEM_PROMPT + chat_history + [{"role": "user", "content": query}]
     }
 
     # Convert data to JSON string
