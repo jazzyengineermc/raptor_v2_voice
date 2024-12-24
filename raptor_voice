@@ -13,7 +13,7 @@ now = datetime.now()
 today = date.today()
 
 # URL of the API endpoint
-url = 'http://localhost:11434/api/chat'
+urlOllama = 'http://localhost:11434/api/chat'
 
 urlPiper = "http://localhost:5000"
 outputFilename = "output.wav"
@@ -77,7 +77,7 @@ def get_chat_response(query, chat_history):
     headers = {'Content-Type': 'application/json'}
 
     # Send POST request with headers and body, enabling streaming
-    response = requests.post(url, data=json_data, headers=headers, stream=True)
+    response = requests.post(urlOllama, data=json_data, headers=headers, stream=True)
 
     # Print response status code
     print(f"Response Status Code: {response.status_code}")
@@ -112,16 +112,26 @@ while True:
     if user_input in ['exit', 'quit']:
         break
     
-    if user_input in ['bye', 'goodbye']:
+    if user_input in ['bye', 'goodbye', 'good by', 'good bye']:
         tts_piper("ta ta for now")
         continue
     
-    if "what time is it" in user_input:
+    if "what time is it" or "what day is it" in user_input:
         # 12 Hour format with am/pm
         dt_string = now.strftime("%I:%M %p")
         # Textual month, day and year	
         d2 = today.strftime("%B %d, %Y")
         tts_piper(f"The time is, {dt_string}, on {d2}")
+        continue
+    
+    if "what do you see" in user_input:
+        # Get image from webcam and ask the LLM
+        tts_piper("Nothing yet, I am not coded for that.")
+        continue
+    
+    if "todo list" or "to do list" in user_input:
+        # todo.py for the win, yay recycled code!
+        tts_piper("To do list placeholder.")
         continue
     
     response_text, chat_history = get_chat_response(user_input, chat_history)
