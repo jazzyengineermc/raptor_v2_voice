@@ -7,6 +7,7 @@ import requests
 import subprocess as cmdLine
 from datetime import datetime
 from datetime import date
+import todo as todo
 
 # datetime object containing current date and time
 now = datetime.now()
@@ -106,36 +107,87 @@ def get_chat_response(query, chat_history):
 chat_history = []
 
 while True:
-    user_input = recognize_speech() # input("You: ")
+    user_input = recognize_speech()
     user_input = user_input.lower()
     user_input = user_input.strip()
+    
     if user_input in ['exit', 'quit']:
+        
         break
     
     if user_input in ['bye', 'goodbye', 'good by', 'good bye']:
+        
         tts_piper("ta ta for now")
+        
         continue
     
     if user_input in ['what time is it', 'what day is it']:
+        
         # 12 Hour format with am/pm
         dt_string = now.strftime("%I:%M %p")
         # Textual month, day and year	
         d2 = today.strftime("%B %d, %Y")
         tts_piper(f"The time is, {dt_string}, on {d2}")
+        
         continue
     
     if user_input in ['what do you see']:
+        
         # Get image from webcam and ask the LLM
         tts_piper("Nothing yet, I am not coded for that.")
+        
         continue
     
     if user_input in ['todo list', 'to do list']:
+        
         # todo.py for the win, yay recycled code!
         tts_piper("To do list placeholder.")
+        
         continue
     
+    if 'to do list' in user_input:
+        
+        if 'add' in user_input:
+            
+            user_input = user_input.replace('add ', '')
+            user_input = user_input.replace(' to my to do list', '')
+            user_input = user_input.replace('\n', '')
+            
+            todo.add(s=str(user_input))
+            tts_piper('added' + str(user_input) + 'to the to do list')
+            user_input = ''
+            
+        elif 'delete' in user_input:
+            
+            user_input = user_input.replace('delete ', '')
+            user_input = user_input.replace(' from my to do list', '')
+            user_input = user_input.strip()
+            
+            todo.deL(no=user_input)
+            tts_piper('removed number. ' + str(user_input) + ' from the todo list')
+            user_input = ''
+            
+        elif 'read' in user_input:
+            
+            tts_piper('list is as follows...') 
+            td_list = todo.nec()
+            tts_piper(td_list)
+            user_input = ''
+            
+        else:
+            
+            tts_piper('I can add items to your list and I can read the list to you')
+            tts_piper('Take note of the number as I read them as it is the number that I need to delete them')
+            tts_piper('Until more input is received, I only see one item to do')
+            tts_piper('Take over the world!')
+            user_input = ''
+            
+        continue
+                  
     response_text, chat_history = get_chat_response(user_input, chat_history)
+    
     if response_text is not None:
+        
         print(f"Bot: {response_text}")
         chat_history.append({"role": "user", "content": user_input})
         chat_history.append({"role": "assistant", "content": response_text})
