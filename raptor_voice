@@ -162,8 +162,14 @@ while True:
             
         elif 'read' in user_input:
              
-            td_list = todo.ls()
-            tts_piper('list is as follows...' + str(td_list))
+            index_number = 1
+            with open("todo.lst", "r") as file:
+                for line in file:
+                    # Process each line here
+                    line = line.strip()
+                    #newline = [index_number + ". " + line + "."]
+                    tts_piper(f"{index_number}. {line}.")          
+                    index_number = index_number+1
             user_input = ''
             
         else:
