@@ -163,7 +163,7 @@ while True:
         elif 'read' in user_input:
              
             td_list = todo.ls()
-            tts_piper('list is as follows...' + str(td_list.stdout))
+            tts_piper('list is as follows...' + str(td_list))
             user_input = ''
             
         else:
