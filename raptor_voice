@@ -138,13 +138,6 @@ while True:
         
         continue
     
-    if user_input in ['todo list', 'to do list']:
-        
-        # todo.py for the win, yay recycled code!
-        tts_piper("To do list placeholder.")
-        
-        continue
-    
     if 'to do list' in user_input:
         
         if 'add' in user_input:
