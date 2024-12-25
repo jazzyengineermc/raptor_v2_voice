@@ -103,6 +103,12 @@ def get_chat_response(query, chat_history):
     else:
         print(f"Error: {response.text}")
         return None, []
+    
+
+def new_chat():
+    chat_history = []
+    tts_piper("Mind Wiped, no chat history in buffer")
+    
 
 # Initialize chat history
 chat_history = []
@@ -115,6 +121,12 @@ while True:
     if user_input in ['exit', 'quit']:
         
         break
+    
+    if user_input in ['mindwipe']:
+        
+        new_chat()
+        
+        continue
     
     if user_input in ['bye', 'goodbye', 'good by', 'good bye']:
         
