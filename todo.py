@@ -23,12 +23,16 @@ def add(s):
 	print(f"Added todo: {s}")
 
 
-td_list = []
-
 def ls():
-    cat_command = 'cat ' + "todo.lst" 
-    td_list = cmdLine.run(cat_command, shell=True, capture_output=True, text=True)
-    print(td_list.stdout)
+    #content = ""
+    index_number = 1
+    with open("todo.lst", "r") as file:
+        for line in file:
+            # Process each line here
+            line = line.strip()
+            #newline = [index_number + ". " + line + "."]
+            print(f"{index_number}. {line}.")          
+            index_number = index_number+1
 
 
 def deL(no):

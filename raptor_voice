@@ -161,9 +161,8 @@ while True:
             user_input = ''
             
         elif 'read' in user_input:
-            
-            cat_command = 'cat ' + "todo.lst" 
-            td_list = cmdLine.run(cat_command, shell=True, capture_output=True, text=True)
+             
+            td_list = todo.ls()
             tts_piper('list is as follows...' + str(td_list.stdout))
             user_input = ''
             
