@@ -122,7 +122,7 @@ while True:
         
         break
     
-    if user_input in ['mindwipe']:
+    if user_input in ['mindwipe', 'mind wipe', 'new chat']:
         
         new_chat()
         
