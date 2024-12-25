@@ -171,7 +171,7 @@ while True:
             
             cat_command = 'cat ' + "todo.lst" 
             td_list = cmdLine.run(cat_command, shell=True, capture_output=True, text=True)
-            tts_piper('list is as follows...' + str(td_list))
+            tts_piper('list is as follows...' + str(td_list.stdout))
             user_input = ''
             
         else:
