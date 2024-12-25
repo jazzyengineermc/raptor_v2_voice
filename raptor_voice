@@ -65,6 +65,7 @@ def tts_piper(textToSpeak):
     
 
 def get_chat_response(query, chat_history):
+    tts_piper("Processing a response.")
     # Data payload as JSON object with conversation history
     data = {
         "model": "llava-phi3",
