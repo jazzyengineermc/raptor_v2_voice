@@ -1,5 +1,6 @@
 import sys
 import datetime
+import subprocess as cmdLine
     
 
 def help():
@@ -25,26 +26,9 @@ def add(s):
 td_list = []
 
 def ls():
-	try:
-		d = {}
-		f = open('todo.lst', 'r')
-		c = 1
-		for line in f:
-			line = line.strip('\n')
-			#speech = [str(c) + str(line)]
-            #tts_piper(textToSpeak=speech)
-			d.update({c: line})
-			c = c+1
-		l = len(d)
-		k = l
-
-		for i in d:
-			sys.stdout.buffer.write(f"[{l}] {d[l]}\n".encode('utf8'))
-			sys.stdout.buffer.write("\n".encode('utf8'))
-			l = l-1
-
-	except Exception as e:
-		raise e
+    cat_command = 'cat ' + "todo.lst" 
+    td_list = cmdLine.run(cat_command, shell=True, capture_output=True, text=True)
+    print(td_list.stdout)
 
 
 def deL(no):
