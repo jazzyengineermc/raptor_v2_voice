@@ -147,7 +147,7 @@ while True:
     if user_input in ['what do you see']:
         
         # Get image from webcam and ask the LLM
-        tts_piper("Nothing yet, I am not coded for that.")
+        tts_piper("Nothing yet, I am not coded for that. Though I hear that is coming soon.")
         
         continue
     
